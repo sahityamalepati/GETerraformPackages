@@ -184,7 +184,7 @@ resource "azurerm_linux_virtual_machine" "linux_vms" {
 
   # Design Decision #1583
   dynamic "identity" {
-    for_each = coalesce(lookup(each.value, "assign_identity"), false) == false ? [] : list(coalesce(lookup(each.value, "assign_identity"), false))
+    for_each = coalesce(lookup(each.value, "assign_identity"), false) == false ? [] : tolist([coalesce(lookup(each.value, "assign_identity"), false)])
     content {
       type = "SystemAssigned"
     }
@@ -447,7 +447,7 @@ resource "azurerm_managed_disk" "this" {
   location            = local.resourcegroup_state_exists == true ? lookup(data.terraform_remote_state.resourcegroup.outputs.resource_group_locations_map, var.resource_group_name) : data.azurerm_resource_group.this.0.location
   resource_group_name = local.resourcegroup_state_exists == true ? var.resource_group_name : data.azurerm_resource_group.this.0.name
 
-  zones                  = lookup(lookup(local.linux_vms, each.value["vm_key"]), "availability_set_key", null) == null ? (lookup(lookup(local.linux_vms, each.value["vm_key"]), "zone", null) != null ? list(lookup(lookup(local.linux_vms, each.value["vm_key"]), "zone")) : []) : []
+  zones                  = lookup(lookup(local.linux_vms, each.value["vm_key"]), "availability_set_key", null) == null ? (lookup(lookup(local.linux_vms, each.value["vm_key"]), "zone", null) != null ? tolist([lookup(lookup(local.linux_vms, each.value["vm_key"]), "zone")]) : []) : []
   storage_account_type   = coalesce(lookup(each.value, "storage_account_type"), "Standard_LRS")
   disk_encryption_set_id = lookup(lookup(local.linux_vms, each.value["vm_key"]), "enable_cmk_disk_encryption", false) == true ? lookup(data.azurerm_disk_encryption_set.this, each.value["vm_key"])["id"] : lookup(lookup(local.linux_vms, each.value["vm_key"]), "enable_cmk_disk_encryption") == true && ((local.keyvault_state_exists == true ? data.terraform_remote_state.keyvault.outputs.purge_protection : data.azurerm_key_vault.this.0.purge_protection_enabled) == true) ? lookup(azurerm_disk_encryption_set.this, each.value["vm_key"])["id"] : null
   disk_size_gb           = coalesce(lookup(each.value, "disk_size"), 1)

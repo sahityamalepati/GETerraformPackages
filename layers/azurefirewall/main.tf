@@ -4,8 +4,13 @@ data "azurerm_resource_group" "this" {
 }
 
 locals {
-  tags                       = merge(var.firewall_additional_tags, (local.resourcegroup_state_exists == true ? lookup(data.terraform_remote_state.resourcegroup.outputs.resource_group_tags_map, var.resource_group_name) : data.azurerm_resource_group.this.0.tags))
-  resourcegroup_state_exists = length(values(data.terraform_remote_state.resourcegroup.outputs)) == 0 ? false : true
+  tags                       = merge(var.firewall_additional_tags, (local.resourcegroup_state_exists == true ? lookup(data.terraform_remote_state.resourcegroup.outputs.resource_group_tags_map, var.resource_group_name) : data.azurerm_resource_group.this.0.tags))variable "listener_arn" {
+     type = "string"
+  }
+  
+  data "aws_alb_listener" "listener" {
+     arn = "${var.listener_arn}"
+  }
   networking_state_exists    = length(values(data.terraform_remote_state.networking.outputs)) == 0 ? false : true
 
   ip_config_subnets_list = flatten([
@@ -95,7 +100,7 @@ resource "azurerm_firewall_nat_rule_collection" "this" {
       description           = rule.value.description
       source_addresses      = rule.value.source_addresses
       destination_ports     = rule.value.destination_ports
-      destination_addresses = list(lookup(azurerm_public_ip.this, each.value["firewall_key"])["ip_address"])
+      destination_addresses = tolist([lookup(azurerm_public_ip.this, each.value["firewall_key"])["ip_address"]])
       protocols             = rule.value.protocols
       translated_address    = rule.value.translated_address
       translated_port       = rule.value.translated_port

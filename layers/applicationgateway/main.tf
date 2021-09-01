@@ -432,7 +432,7 @@ resource "azurerm_web_application_firewall_policy" "this" {
   }
 
   dynamic "policy_settings" {
-    for_each = lookup(each.value, "policy_settings", null) != null ? list(lookup(each.value, "policy_settings")) : []
+    for_each = lookup(each.value, "policy_settings", null) != null ? tolist([lookup(each.value, "policy_settings")]) : []
     content {
       enabled = coalesce(policy_settings.value.enabled, true)
       mode    = coalesce(policy_settings.value.mode, "Prevention")
@@ -440,7 +440,7 @@ resource "azurerm_web_application_firewall_policy" "this" {
   }
 
   dynamic "managed_rules" {
-    for_each = lookup(each.value, "managed_rules", null) != null ? list(lookup(each.value, "managed_rules")) : []
+    for_each = lookup(each.value, "managed_rules", null) != null ? tolist([lookup(each.value, "managed_rules")]) : []
     content {
       dynamic "exclusion" {
         for_each = coalesce(managed_rules.value.exclusions, [])
