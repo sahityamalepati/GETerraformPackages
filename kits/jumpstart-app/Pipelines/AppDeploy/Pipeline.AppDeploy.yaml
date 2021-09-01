@@ -1,0 +1,28 @@
+parameters:
+- name: Environment
+  displayName: The environment to use for running this pipeline (dev, sit, uat)
+  type: string
+  default: dev
+
+trigger: none
+
+name: AppDeploy-${{ parameters.environment }}-$(Rev:rr)
+
+variables:
+  - template: ./Variables.yaml
+  - template: ./Variables.${{ parameters.environment }}.yaml
+  - name: appDeployScriptsPath
+    value: $(Build.SourcesDirectory)/Pipelines/AppDeploy/Scripts
+
+pool: $(agent_pool)
+
+stages:
+  - template:  ./Stage.AppDeploy.yaml
+    parameters:
+      environment: ${{ parameters.environment }}
+      vms:
+        - name: ${{ variables.appVm1Name }}
+          resourcegroup: ${{ variables.resourceGroup }}
+          
+#        - name: ${{ variables.appVm2Name }}
+#          resourcegroup: ${{ variables.resourceGroup }}

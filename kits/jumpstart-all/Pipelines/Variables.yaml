@@ -1,0 +1,25 @@
+variables:
+  - name: appid
+    value: ge001                         # <--- CHANGE TO APPLICATION appid
+  - name: agent_pool
+    value: npueb-adoagent
+  - name: projectName
+    value: "Stratum"                    # <--- CHANGE TO YOUR ADO PROJECT NAME
+  - name: pipelineId
+    value: 207
+  - name: preferTriggeringPipeline
+    value: true
+  - name: downloadPath
+    value: $(Build.ArtifactStagingDirectory)
+  - name: runVersion
+    value: latestFromBranch
+  - name: runBranch
+    value: refs/heads/master
+  - name: basedOnStratumKitName           # Only needed when running kit from Stratum
+    value: jumpstart-all
+  - name: artifactFeedCredentials         # PAT based service connection to Azure Artifacts feed
+    value: "StratumFeed"
+  - name: artifactFeed
+    value: "Stratum"
+  - name: kitPath
+    value: "./<repoRootFolder>/" # YOU MUST UPDATE THIS VALUE FOR THE PIPELINE TO RUN!

@@ -1,0 +1,25 @@
+variables:
+  - name: serviceConnectionApp
+    value: GECNB-NP-PIPELINE-IDENTITY# <--- CHANGE TO DEVOPS SERVICE CONNECTION NAME
+
+# VM Config variables
+  - name: resourceGroup
+    value: ActiveDirectory
+  - name: appVm1Name
+    value: pilotdns
+#  - name: appVm1Name
+#    value: vtil-eastus2-dev-appvm02
+#  - name: appVm2Name
+#    value: vtil-eastus2-dev-appvm03
+#  - name: dbVmName
+#    value: vtil-eastus2-dev-dbvm02
+
+# App Deploy Variables
+  - name: Environment
+    value: dev
+#  - name: KeyVaultName
+#    value: vtil-nprd-kv-05
+#  - name: VtilHostname
+#    value: vtil-az.test.att.com
+#  - name: CertificateName
+#    value: vtil.dev.att.com.pfx

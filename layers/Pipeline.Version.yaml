@@ -1,0 +1,60 @@
+parameters:
+- name: versionOption
+  type: string
+  default: patch
+  displayName: 'The semantic version type (major, minor, or patch)'
+
+
+name: manual-version-layers-$(Date:yyyyMMdd).$(Rev:rr)
+
+# Note: this might be able to be run as a pre merge task, during PR time automatically
+# Be sure to store your PAT in a library group named run_pipelines_auth
+# Be sure to update the values on lines 27 and 29
+# Run this pipeine to create a pipeline for each layer and start the first build
+
+trigger:
+  branches:
+    include:
+    - users/*
+  paths:
+    include:
+      - /layers/Pipeline.Version.yaml
+
+variables:
+  - name: system.debug 
+    value: true
+  - group: run_pipelines_auth
+  - name: project
+    value: StratumKit #UPDATE THIS VALUE
+  - name: repo_name
+    value: Stratum #UPDATE THIS VALUE
+pool: strm01agents
+
+steps:
+- script: |
+      #Login to az devops
+      az extension add --name azure-devops
+      az devops logout
+      echo $(ado_pat) | az devops login
+
+      #Loop through layers directory. Create and run pipeline to publish initial artifact
+      cd layers
+      for FILE in */;
+      do
+      pipeline_name="layer-${FILE%?}"
+      az pipelines create --name $pipeline_name \
+                          --description 'Pipeline for Stratum' \
+                          --repository $(repo_name) \
+                          --yml-path "/layers/${FILE}Pipelines/Pipeline.yaml" \
+                          --branch master \
+                          --repository-type tfsgit
+      echo "----------------------------------------------------------------"
+      done
+
+
+  displayName: Run Pipeline
+  name: run
+
+
+
+

@@ -1,0 +1,39 @@
+parameters:
+  - name: environment
+    type: string
+  - name: vms
+    type: object
+
+
+stages:
+  - stage: ${{ parameters.environment }}_AppDeploy
+    displayName: ${{ parameters.environment }}_AppDeploy
+    variables:
+      - template: ./Variables.${{ parameters.environment }}.yaml
+      - name: scriptPath
+        value: $(Build.SourcesDirectory)/kits/jumpstart-app/Pipelines/AppDeploy/Scripts
+    jobs:
+    - ${{ each vm in parameters.vms }}:
+      - deployment: ${{ parameters.environment }}_${{ replace(vm.name, '-', '_') }}_AppDeploy
+        displayName: ${{ parameters.environment }}_${{ vm.name }}_AppDeploy
+        environment: ${{ parameters.environment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - checkout: self
+              - task: AzureCLI@2
+                displayName: ${{ parameters.environment }} ${{ vm.name }} run-command
+                inputs:
+                  azureSubscription: ${{ variables.serviceConnectionApp }}
+                  addSpnToEnvironment: true
+                  scriptType: bash
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    az vm run-command invoke --command-id RunPowerShellScript --name ${{ vm.name }} -g ${{ vm.resourcegroup }} \
+                    --scripts @${{ variables.scriptPath }}/adddns.ps1
+#                    --parameters \
+#                    'Environment="${{ variables.Environment }}"' \
+#                    'KeyVaultName="${{ variables.KeyVaultName }}"' \
+#                    'VtilHostname="${{ variables.VtilHostname }}"' \
+#                    'CertificateName="${{ variables.CertificateName }}"'

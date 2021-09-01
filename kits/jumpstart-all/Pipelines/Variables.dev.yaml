@@ -1,0 +1,11 @@
+variables:
+  - name: serviceConnectionApp
+    value: GECNB-NP-PIPELINE-SERVCE-CONNECTION # <--- CHANGE TO DEVOPS SERVICE CONNECTION NAME
+
+  # Terraform Backend Setup
+  - name: backendResourceGroupName
+    value: npueb-devops-rg #$(appid)-eastus2-devops-rg
+  - name: backendStorageAccountName
+    value: npuebdevopsgecnbst #$(appid)devopsstdgge
+  - name: backendContainerName
+    value: # YOU MUST ADD THIS VALUE FOR THE PIPELINE TO RUN!

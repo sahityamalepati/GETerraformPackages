@@ -1,0 +1,28 @@
+parameters:
+- name: versionOption
+  type: string
+  default: patch
+- name: kitToPublish
+  type: string
+
+name: kit-publish-$(Date:yyyyMMdd).$(Rev:rr)
+
+trigger: none
+
+variables:
+  - name: system.debug 
+    value: true
+
+pool: custom_vmss
+
+steps:
+- task: UniversalPackages@0
+  inputs:
+    command: 'publish'
+    publishDirectory: '$(System.DefaultWorkingDirectory)/kits/${{ parameters.kitToPublish }}'
+    feedsToUsePublish: 'external'
+    feedPublishExternal: 'Stratum'
+    packagePublishExternal: ${{ parameters.kitToPublish }}
+    versionOption: ${{ parameters.versionOption }}
+    publishFeedCredentials: 'StratumFeed'
+    packagePublishDescription: 'TBD point to the readme file'

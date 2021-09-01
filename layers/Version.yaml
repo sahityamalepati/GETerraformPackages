@@ -1,0 +1,55 @@
+parameters:
+- name: layerName
+  type: string
+  displayName: 'Name of the layer. This will be used to change directory into the corresponding layer folder'
+- name: triggerPipelineVersionOption
+  type: string
+  displayName: 'The value will be null if not provided. This is the version option provided from an upstream pipeline'
+- name: versionOption
+  type: string
+  default: patch
+  displayName: 'The semantic version type (major, minor, or patch)'
+
+steps:
+- script: |
+    set -e # errors matter
+    echo "Copying scripts *.sh files into layer ${{ parameters.layerName }}"
+    cp -v $(System.DefaultWorkingDirectory)/scripts/*.sh '$(System.DefaultWorkingDirectory)/layers/${{ parameters.layerName }}'
+    echo "Copying scripts/emptystate folder into layer"
+    cp -rv $(System.DefaultWorkingDirectory)/scripts/emptystate/ '$(System.DefaultWorkingDirectory)/layers/${{ parameters.layerName }}'
+  displayName: Package Files ${{ parameters.layerName }}
+  condition: succeeded()
+  name: packageFiles
+
+
+- script: |
+    echo "triggerPipelineVersionOption: [${{ parameters.triggerPipelineVersionOption }}]"
+    echo "versionOption: ${{ parameters.versionOption }}"
+
+    # Make versionType value provided from triggerPipelineVersionOption
+    # if not null
+    if [[ "${{ parameters.triggerPipelineVersionOption }}" == "" ]];
+    then
+      echo "The version type is provided by this pipeline"
+      versionType=${{ parameters.versionOption }}
+    else
+      echo "Pipeline triggered by manual-version-layers pipeline"
+      versionType=${{ parameters.versionOption }}
+    fi
+    echo "##vso[task.setvariable variable=versionType;]$versionType"
+
+  displayName: Get Version Type for ${{ parameters.layerName }}
+  condition: succeeded()
+  name: getVersionType
+
+- task: UniversalPackages@0
+  displayName: Publish Layer to Azure Artifacts Gallery for ${{ parameters.layerName }}
+  inputs:
+    command: 'publish'
+    publishDirectory: '$(System.DefaultWorkingDirectory)/layers/${{ parameters.layerName }}'
+    feedsToUsePublish: 'external'
+    feedPublishExternal: 'Stratum'
+    packagePublishExternal: 'layer-${{ parameters.layerName }}'
+    versionOption: $(versionType)
+    publishFeedCredentials: 'StratumFeed'
+    packagePublishDescription: 'https://dev.azure.com/StratumKit/Stratum/_git/Stratum?path=%2Flayers&version=GBmaster&_a=contents'

@@ -1,0 +1,450 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - /<repoRootFolder>/* # YOU MUST UPDATE THIS VALUE FOR THE PIPELINE TO RUN!
+    exclude:
+      - /**/*.md
+      - /secret/*.*
+      - /.attachments
+
+variables:
+  - template: Variables.yaml
+
+pool: $(agent_pool)
+
+# remove this if not planning to use image builder
+#resources:
+#  pipelines:
+#    - pipeline: image-source
+#      source: jumpstart-image-builder-sig #<--- Verify source matches name of image builder pipeline
+#      trigger:
+#        branches:
+#          include:
+#            - master
+#          exclude:
+#            - users/*
+
+stages:
+  - template: ./Layers.yaml
+    parameters:
+      environment: dev
+#      getImageLayers: virtualmachine, virtualmachinescaleset
+#      projectName: ${{ variables.projectName }}
+#      pipelineId: ${{ variables.pipelineId }}
+#      runId: $(resources.pipeline.image-source.runID)
+#      preferTriggeringPipeline: ${{ variables.preferTriggeringPipeline }}
+#      downloadPath: ${{ variables.downloadPath }}
+#      runVersion: ${{ variables.runVersion }}
+#      runBranch: ${{ variables.runBranch }}
+
+      layers:
+        # - name: resourcegroup
+        #   type: resourcegroup
+        #   version: "0.0.8"
+        #   skip: false
+        #   provider: terraform
+        #   destroy: false
+
+#        - name: applicationinsights
+#          type: applicationinsights
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+
+        # - name: applicationsecuritygroup
+        #   type: applicationsecuritygroup
+        #   version: "0.0.8"
+        #   skip: false
+        #   provider: terraform
+        #   destroy: false
+        #   dependencies:
+        #     resourcegroup: resourcegroup
+
+        # - name: networksecuritygroup
+        #   type: networksecuritygroup
+        #   version: "0.0.9"
+        #   skip: false
+        #   provider: terraform
+        #   destroy: false
+        #   dependencies:
+        #     applicationsecuritygroup: applicationsecuritygroup
+
+#        - name: networking
+#          type: networking
+#          version: "0.0.9"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#            networksecuritygroup: networksecuritygroup
+
+        # - name: networkingsubnet
+        #   type: networking
+        #   version: "0.0.9"
+        #   skip: false
+        #   provider: terraform
+        #   destroy: false
+        #   dependencies:
+        #     resourcegroup: resourcegroup
+        #     networksecuritygroup: networksecuritygroup
+
+        # - name: netapp
+        #   type: netapp
+        #   version: "0.0.17"
+        #   skip: false
+        #   provider: terraform
+        #   destroy: false
+        #   dependencies:
+        #     resourcegroup: resourcegroup
+        #     networking: networking
+
+#
+#        - name: keyvault
+#          type: keyvault
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+
+#        - name: adoprivateendpoints
+#          type: adoprivateendpoints
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            keyvault: keyvault
+
+#        - name: loganalytics
+#          type: loganalytics
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            keyvault: keyvault
+#            #adoprivateendpoints: adoprivateendpoints
+#
+#        - name: storage
+#          type: storage
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            keyvault: keyvault
+#            #adoprivateendpoints: adoprivateendpoints
+#
+#        - name: nsgflowlogs
+#          type: nsgflowlogs
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networksecuritygroup: networksecuritygroup
+#            storage: storage
+#            loganalytics: loganalytics
+#
+#        - name: azsql
+#          type: azsql
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            keyvault: keyvault
+##            adoprivateendpoints: adoprivateendpoints
+#            storage: storage
+#
+#        - name: loadbalancer
+#          type: loadbalancer
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+##          dependencies:
+##            networking: networking
+
+#        - name: privatelinkservice
+#          type: privatelinkservice
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networking: networking
+#            loadbalancer: loadbalancer
+
+#        - name: applicationgateway
+#          type: applicationgateway
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+##            networking: networking
+#
+#        - name: recoveryservicesvault
+#          type: recoveryservicesvault
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#
+#        - name: azurecontainer_registry
+#          type: azurecontainer_registry
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#
+#        - name: virtualmachine
+#          type: virtualmachine
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            loadbalancer: loadbalancer
+#            storage: storage
+#            keyvault: keyvault
+#            #adoprivateendpoints: adoprivateendpoints
+#            applicationgateway: applicationgateway
+#            recoveryservicesvault: recoveryservicesvault
+#            applicationsecuritygroup: applicationsecuritygroup
+##
+#        - name: virtualmachineextension
+#          type: virtualmachineextension
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#            storage: storage
+#            loganalytics: loganalytics
+#            virtualmachine: virtualmachine
+#
+#        - name: virtualmachinescaleset
+#          type: virtualmachinescaleset
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            loadbalancer: loadbalancer
+#            storage: storage
+#            keyvault: keyvault
+#            #adoprivateendpoints: adoprivateendpoints
+#            applicationgateway: applicationgateway
+#            applicationsecuritygroup: applicationsecuritygroup
+#
+#        - name: virtualmachinescalesetextension
+#          type: virtualmachinescalesetextension
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            storage: storage
+#            loganalytics: loganalytics
+#            virtualmachinescaleset: virtualmachinescaleset
+#
+#        - name: privateendpoints
+#          type: privateendpoints
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networking: networking
+#            keyvault: keyvault
+#            storage: storage
+#            azsql: azsql
+#            mysql: mysql
+#            postgresqldb: postgresqldb
+#            cosmosdb: cosmosdb
+#            azurefunction: azurefunction
+#
+#        - name: privatednszone
+#          type: privatednszone
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networking: networking
+#
+#        - name: privatednsrecords
+#          type: privatednsrecords
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            privatednszone: privatednszone
+#            privateendpoints: privateendpoints
+#
+#        - name: azurefunction
+#          type: azurefunction
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            storage: storage
+#            #applicationinsights: applicationinsights
+#
+#        - name: trafficmanager
+#          type: trafficmanager
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            azurefunction: azurefunction
+#            applicationgateway: applicationgateway
+#
+#        - name: azuremonitor
+#          type: azuremonitor
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            storage: storage
+#            loganalytics: loganalytics
+#            virtualmachine: virtualmachine
+#
+#        - name: vm_alerts
+#          type: vm_alerts
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#            loganalytics: loganalytics
+#            azuremonitor: azuremonitor
+#
+#        - name: vm_dashboards
+#          type: vm_dashboards
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#            loganalytics: loganalytics
+#
+#        - name: vm_workbooks
+#          type: vm_workbooks
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#            loganalytics: loganalytics
+
+#        - name: azurefirewall
+#          type: azurefirewall
+#          version: "0.0.8"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+##            networking: networking
+#            resourcegroup: resourcegroup
+
+#        - name: cosmosdb
+#          type: cosmosdb
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networking: networking
+#
+#        - name: postgresqldb
+#          type: postgresqldb
+#          version: "1.1.0"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            keyvault: keyvault
+#            adoprivateendpoints: adoprivateendpoints
+#
+#        - name: mysql
+#          type: mysql
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            keyvault: keyvault
+#            adoprivateendpoints: adoprivateendpoints
+#
+#        - name: aks
+#          type: aks
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networking: networking
+#            keyvault: keyvault
+#            adoprivateendpoints: adoprivateendpoints
+#            loganalytics: loganalytics
+#
+#        - name: sharedimagegallery
+#          type: sharedimagegallery
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            resourcegroup: resourcegroup
+#
+#        - name: azurerediscache
+#          type: azurerediscache
+#          version: "0.0.1"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            networking: networking
+#            storage: storage
+#
+#        - name: diagnosticlogs
+#          type: diagnosticlogs
+#          version: "1.1.0"
+#          skip: false
+#          provider: terraform
+#          destroy: false
+#          dependencies:
+#            storage: storage
+#            loganalytics: loganalytics
+#            applicationgateway: applicationgateway
+#            keyvault: keyvault
+#            cosmosdb: cosmosdb
+#            mysql: mysql
+#            azsql: azsql
+#            aks: aks
+#            postgresqldb: postgresqldb
